@@ -1,8 +1,11 @@
 package role
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lucascmpus/lend/handler"
+	"github.com/lucascmpus/lend/schemas"
 )
 
 func CreateRoleHandler(c *gin.Context) {
@@ -13,14 +16,20 @@ func CreateRoleHandler(c *gin.Context) {
 	c.BindJSON(&request)
 
 	if err := request.Validate(); err != nil {
-		logger.ErrorF("")
-	}
-
-	if err := db.Create(&request).Error; err != nil {
-		logger.ErrorF("Error creating {ROLE} %v", err.Error())
+		logger.ErrorF("validation error: %v", err.Error())
+		handler.ResponseError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// c.JSON(http.StatusOK, )
+	role := schemas.Role{
+		Name: request.Name,
+	}
 
+	if err := db.Create(role).Error; err != nil {
+		logger.ErrorF("Error creating {ROLE} %v", err.Error())
+		handler.ResponseError(c, http.StatusInternalServerError, "error on creating {ROLE}")
+		return
+	}
+
+	handler.ResponseSuccess(c, "create role", role)
 }

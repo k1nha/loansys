@@ -2,7 +2,7 @@ package handler
 
 import "fmt"
 
-func errorParamRequired(name, typ string) error {
+func ErrorParamRequired(name, typ string) error {
 	return fmt.Errorf("param: %s (type: %s) is required", name, typ)
 }
 
@@ -12,7 +12,7 @@ type CreateRoleRequest struct {
 
 func (cRole *CreateRoleRequest) Validate() error {
 	if cRole.Name == "" {
-		return errorParamRequired("role", "string")
+		return ErrorParamRequired("role", "string")
 	}
 
 	return nil
